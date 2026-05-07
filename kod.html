@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İlaç Deposu Yönetim Sistemi</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial, sans-serif;
+    }
+
+    body{
+        background:#f4f6f9;
+    }
+
+    header{
+        background:#0b5ed7;
+        color:white;
+        padding:20px;
+        text-align:center;
+        font-size:28px;
+        font-weight:bold;
+    }
+
+    nav{
+        background:#083b8a;
+        padding:15px;
+    }
+
+    nav ul{
+        display:flex;
+        list-style:none;
+        gap:20px;
+    }
+
+    nav ul li{
+        color:white;
+        cursor:pointer;
+        font-weight:bold;
+    }
+
+    .container{
+        width:90%;
+        margin:30px auto;
+    }
+
+    .card{
+        background:white;
+        padding:20px;
+        border-radius:10px;
+        box-shadow:0 0 10px rgba(0,0,0,0.1);
+        margin-bottom:30px;
+    }
+
+    h2{
+        margin-bottom:15px;
+        color:#0b5ed7;
+    }
+
+    input, textarea{
+        width:100%;
+        padding:12px;
+        margin-top:10px;
+        border:1px solid #ccc;
+        border-radius:5px;
+    }
+
+    button{
+        margin-top:15px;
+        padding:12px 20px;
+        border:none;
+        border-radius:5px;
+        cursor:pointer;
+        font-weight:bold;
+    }
+
+    .btn-add{
+        background:#198754;
+        color:white;
+    }
+
+    .btn-edit{
+        background:#ffc107;
+    }
+
+    .btn-delete{
+        background:#dc3545;
+        color:white;
+    }
+
+    .search-box{
+        margin-bottom:20px;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+    }
+
+    table th, table td{
+        border:1px solid #ddd;
+        padding:12px;
+        text-align:center;
+    }
+
+    table th{
+        background:#0b5ed7;
+        color:white;
+    }
+
+    footer{
+        background:#083b8a;
+        color:white;
+        text-align:center;
+        padding:15px;
+        margin-top:30px;
+    }
+
+    @media(max-width:768px){
+        nav ul{
+            flex-direction:column;
+        }
+
+        table{
+            font-size:12px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    İlaç Deposu Yönetim Sistemi
+</header>
+
+<nav>
+    <ul>
+        <li>Ana Sayfa</li>
+        <li>İlaçlar</li>
+        <li>Hastalar</li>
+        <li>Raporlar</li>
+        <li>İletişim</li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <!-- İLAÇ EKLEME -->
+    <div class="card">
+        <h2>İlaç Ekle</h2>
+
+        <input type="text" id="ilacAdi" placeholder="İlaç Adı">
+        <input type="text" id="firma" placeholder="Firma">
+        <input type="number" id="stok" placeholder="Stok Miktarı">
+
+        <button class="btn-add" onclick="ilacEkle()">
+            İlaç Ekle
+        </button>
+    </div>
+
+    <!-- ARAMA -->
+    <div class="card">
+        <h2>İlaç Ara</h2>
+
+        <input type="text" id="arama" class="search-box"
+        placeholder="İlaç ara..."
+        onkeyup="aramaYap()">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>İlaç Adı</th>
+                    <th>Firma</th>
+                    <th>Stok</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+
+            <tbody id="ilacTablo">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- HASTA BİLGİLERİ -->
+    <div class="card">
+        <h2>Hasta Bilgileri</h2>
+
+        <input type="text" placeholder="Hasta Ad Soyad">
+        <input type="text" placeholder="TC Kimlik No">
+        <input type="text" placeholder="Telefon">
+        <textarea rows="4" placeholder="Hastalık / Açıklama"></textarea>
+
+        <button class="btn-add">
+            Hasta Kaydet
+        </button>
+    </div>
+
+</div>
+
+<footer>
+    © 2026 İlaç Deposu Sistemi | Tüm Hakları Saklıdır
+</footer>
+
+<script>
+
+let ilaclar = [];
+
+function ilacEkle(){
+
+    let ad = document.getElementById("ilacAdi").value;
+    let firma = document.getElementById("firma").value;
+    let stok = document.getElementById("stok").value;
+
+    if(ad === "" || firma === "" || stok === ""){
+        alert("Lütfen tüm alanları doldurun!");
+        return;
+    }
+
+    ilaclar.push({
+        ad,
+        firma,
+        stok
+    });
+
+    tabloGoster();
+
+    document.getElementById("ilacAdi").value = "";
+    document.getElementById("firma").value = "";
+    document.getElementById("stok").value = "";
+}
+
+function tabloGoster(){
+
+    let tablo = document.getElementById("ilacTablo");
+
+    tablo.innerHTML = "";
+
+    ilaclar.forEach((ilac,index)=>{
+
+        tablo.innerHTML += `
+            <tr>
+                <td>${ilac.ad}</td>
+                <td>${ilac.firma}</td>
+                <td>${ilac.stok}</td>
+
+                <td>
+                    <button class="btn-edit"
+                    onclick="duzenle(${index})">
+                    Düzenle
+                    </button>
+
+                    <button class="btn-delete"
+                    onclick="sil(${index})">
+                    Sil
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function sil(index){
+
+    if(confirm("Silmek istediğinize emin misiniz?")){
+        ilaclar.splice(index,1);
+        tabloGoster();
+    }
+}
+
+function duzenle(index){
+
+    let yeniAd = prompt("Yeni ilaç adı:", ilaclar[index].ad);
+    let yeniFirma = prompt("Yeni firma:", ilaclar[index].firma);
+    let yeniStok = prompt("Yeni stok:", ilaclar[index].stok);
+
+    if(yeniAd && yeniFirma && yeniStok){
+
+        ilaclar[index].ad = yeniAd;
+        ilaclar[index].firma = yeniFirma;
+        ilaclar[index].stok = yeniStok;
+
+        tabloGoster();
+    }
+}
+
+function aramaYap(){
+
+    let filtre = document.getElementById("arama")
+    .value.toLowerCase();
+
+    let satirlar = document.querySelectorAll("#ilacTablo tr");
+
+    satirlar.forEach(satir => {
+
+        let text = satir.innerText.toLowerCase();
+
+        if(text.includes(filtre)){
+            satir.style.display = "";
+        }else{
+            satir.style.display = "none";
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
